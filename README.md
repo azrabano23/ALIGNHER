@@ -14,7 +14,6 @@
 - **📅 Intelligent Scheduling** - Multi-criteria provider matching with real-time availability
 - **🎯 No-Show Prevention** - ML-driven risk prediction with tiered intervention campaigns
 - **🔗 Seamless Integration** - Real-time handoff between triage and prevention systems
-- **💰 Proven ROI** - 20-40% reduction in no-shows, $50K-$200K annual savings per provider
 
 ---
 
