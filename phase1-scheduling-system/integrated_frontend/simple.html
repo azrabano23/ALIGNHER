@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Healthcare Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .card { border: 1px solid #ccc; padding: 20px; margin: 10px 0; border-radius: 8px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        input, select, textarea { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px; }
+        .results { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <h1>🏥 Healthcare System - Simple Test</h1>
+    
+    <div class="card">
+        <h2>System Status</h2>
+        <button onclick="checkHealth()">Check System Health</button>
+        <div id="healthResults" class="results" style="display: none;"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Doctor Registration</h2>
+        <input type="email" id="doctorEmail" placeholder="Email" value="test@example.com">
+        <input type="password" id="doctorPassword" placeholder="Password" value="password123">
+        <input type="text" id="doctorName" placeholder="Full Name" value="Dr. John Smith">
+        <select id="doctorSpecialty">
+            <option value="Obstetrics and Gynecology">Obstetrics and Gynecology</option>
+            <option value="Internal Medicine">Internal Medicine</option>
+        </select>
+        <button onclick="registerDoctor()">Register Doctor</button>
+        <div id="doctorResults" class="results" style="display: none;"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Patient Registration</h2>
+        <input type="email" id="patientEmail" placeholder="Email" value="patient@example.com">
+        <input type="password" id="patientPassword" placeholder="Password" value="password123">
+        <input type="text" id="patientFirstName" placeholder="First Name" value="Jane">
+        <input type="text" id="patientLastName" placeholder="Last Name" value="Doe">
+        <input type="tel" id="patientPhone" placeholder="Phone" value="555-1234">
+        <button onclick="registerPatient()">Register Patient</button>
+        <div id="patientResults" class="results" style="display: none;"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Triage Assessment</h2>
+        <input type="text" id="patientId" placeholder="Patient ID (from registration)">
+        <textarea id="chiefComplaint" placeholder="Chief complaint">Pelvic pain and irregular periods</textarea>
+        <input type="text" id="symptoms" placeholder="Symptoms (comma-separated)" value="pelvic pain, irregular periods, cramping">
+        <select id="painLevel">
+            <option value="">Select pain level</option>
+            <option value="3">3 - Uncomfortable</option>
+            <option value="6">6 - Distressing</option>
+            <option value="8">8 - Intense</option>
+        </select>
+        <button onclick="performTriage()">Perform Triage</button>
+        <div id="triageResults" class="results" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api/v1';
+        
+        async function makeRequest(url, options = {}) {
+            try {
+                console.log('Making request to:', url);
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers,
+                    },
+                    ...options,
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                return data;
+            } catch (error) {
+                console.error('Request failed:', error);
+                throw error;
+            }
+        }
+        
+        function showResult(elementId, content, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `results ${isError ? 'error' : 'success'}`;
+            element.innerHTML = content;
+        }
+        
+        async function checkHealth() {
+            try {
+                const result = await makeRequest('http://localhost:3000/health');
+                showResult('healthResults', `
+                    <h3>✅ System Healthy</h3>
+                    <p>Status: ${result.status}</p>
+                    <p>Timestamp: ${result.timestamp}</p>
+                `);
+            } catch (error) {
+                showResult('healthResults', `
+                    <h3>❌ Health Check Failed</h3>
+                    <p>Error: ${error.message}</p>
+                `, true);
+            }
+        }
+        
+        async function registerDoctor() {
+            try {
+                const data = {
+                    email: document.getElementById('doctorEmail').value,
+                    password: document.getElementById('doctorPassword').value,
+                    full_name: document.getElementById('doctorName').value,
+                    specialty: document.getElementById('doctorSpecialty').value,
+                    credentials: ['MD'],
+                    accepted_insurances: ['Aetna', 'BlueCross'],
+                    hospital_affiliation: 'Test Hospital'
+                };
+                
+                const result = await makeRequest(`${API_BASE}/doctors/register`, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                showResult('doctorResults', `
+                    <h3>✅ Doctor Registered</h3>
+                    <p><strong>Doctor ID:</strong> ${result.doctor_id}</p>
+                    <p><strong>Name:</strong> ${result.full_name}</p>
+                    <p><strong>Specialty:</strong> ${result.specialty}</p>
+                `);
+            } catch (error) {
+                showResult('doctorResults', `
+                    <h3>❌ Registration Failed</h3>
+                    <p>Error: ${error.message}</p>
+                `, true);
+            }
+        }
+        
+        async function registerPatient() {
+            try {
+                const data = {
+                    email: document.getElementById('patientEmail').value,
+                    password: document.getElementById('patientPassword').value,
+                    demographics: {
+                        first_name: document.getElementById('patientFirstName').value,
+                        last_name: document.getElementById('patientLastName').value,
+                        date_of_birth: '1990-01-01',
+                        phone: document.getElementById('patientPhone').value
+                    },
+                    insurance: {
+                        provider: 'Aetna',
+                        policy_number: 'AET123456789'
+                    },
+                    telehealth_preference: true,
+                    consents: {
+                        predictive_reminders: true,
+                        voice_follow_ups: false,
+                        sms_notifications: true,
+                        email_notifications: true
+                    },
+                    medical_history: [],
+                    allergies: []
+                };
+                
+                const result = await makeRequest(`${API_BASE}/patients/register`, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                showResult('patientResults', `
+                    <h3>✅ Patient Registered</h3>
+                    <p><strong>Patient ID:</strong> ${result.patient_id}</p>
+                    <p><strong>Name:</strong> ${result.full_name}</p>
+                    <p><strong>Insurance:</strong> ${result.insurance_provider}</p>
+                    <p><em>Copy the Patient ID above to use in triage!</em></p>
+                `);
+                
+                // Auto-fill patient ID in triage
+                document.getElementById('patientId').value = result.patient_id;
+            } catch (error) {
+                showResult('patientResults', `
+                    <h3>❌ Registration Failed</h3>
+                    <p>Error: ${error.message}</p>
+                `, true);
+            }
+        }
+        
+        async function performTriage() {
+            try {
+                const data = {
+                    patient_id: document.getElementById('patientId').value,
+                    chief_complaint: document.getElementById('chiefComplaint').value,
+                    symptoms: document.getElementById('symptoms').value.split(',').map(s => s.trim()),
+                    medical_history: [],
+                    current_medications: [],
+                    allergies: [],
+                    pain_level: document.getElementById('painLevel').value ? parseInt(document.getElementById('painLevel').value) : null,
+                    duration_of_symptoms: '2 weeks'
+                };
+                
+                const result = await makeRequest(`${API_BASE}/triage/assess`, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                showResult('triageResults', `
+                    <h3>🎯 Triage Assessment Complete</h3>
+                    <p><strong>Priority:</strong> <span style="background: ${getPriorityColor(result.priority_level)}; padding: 2px 8px; border-radius: 12px; color: white;">${result.priority_level.toUpperCase()}</span></p>
+                    <p><strong>Specialty:</strong> ${result.recommended_specialty}</p>
+                    <p><strong>Timeline:</strong> ${result.urgency_timeline}</p>
+                    <p><strong>Doctor Visit Needed:</strong> ${result.doctor_visit_needed ? 'Yes' : 'No'}</p>
+                    <p><strong>Procedure:</strong> ${result.recommended_procedure}</p>
+                    <p><strong>Duration:</strong> ${result.estimated_appointment_duration} minutes</p>
+                    <p><strong>Next Steps:</strong> ${result.next_steps}</p>
+                    <p><strong>Triage ID:</strong> ${result.triage_id}</p>
+                `);
+            } catch (error) {
+                showResult('triageResults', `
+                    <h3>❌ Triage Failed</h3>
+                    <p>Error: ${error.message}</p>
+                `, true);
+            }
+        }
+        
+        function getPriorityColor(priority) {
+            switch(priority) {
+                case 'red': return '#dc2626';
+                case 'orange': return '#ea580c';
+                case 'yellow': return '#d97706';
+                case 'green': return '#16a34a';
+                default: return '#6b7280';
+            }
+        }
+        
+        // Auto-check health on load
+        window.onload = function() {
+            console.log('Simple test page loaded');
+            checkHealth();
+        };
+    </script>
+</body>
+</html>

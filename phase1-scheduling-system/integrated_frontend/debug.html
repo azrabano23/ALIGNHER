@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Healthcare System</title>
+</head>
+<body>
+    <h1>Healthcare System Debug</h1>
+    <button onclick="testAPI()">Test API Connection</button>
+    <button onclick="testRegistration()">Test Doctor Registration</button>
+    <div id="results"></div>
+
+    <script>
+        async function testAPI() {
+            try {
+                const response = await fetch('http://localhost:3000/health');
+                const data = await response.json();
+                document.getElementById('results').innerHTML = `
+                    <h3>API Test Result:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <h3>API Test Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
+        async function testRegistration() {
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/doctors/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'debug@test.com',
+                        password: 'test123',
+                        full_name: 'Dr. Debug',
+                        specialty: 'Internal Medicine',
+                        credentials: ['MD'],
+                        accepted_insurances: ['Aetna'],
+                        hospital_affiliation: 'Test Hospital'
+                    })
+                });
+                
+                const data = await response.json();
+                document.getElementById('results').innerHTML = `
+                    <h3>Registration Test Result:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <h3>Registration Test Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
+        // Test on page load
+        window.onload = function() {
+            console.log('Debug page loaded');
+            testAPI();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"id": "doctor-008539f5-998c-4045-a59e-0411df8018b0", "user_id": "user-bd594622-3aad-4fb7-b08a-823e21c50d71", "full_name": "Dr. Test", "specialty": "Internal Medicine", "credentials": ["MD"], "accepted_insurances": ["Aetna"], "hospital_affiliation": "Test Hospital", "phone": null, "location": null, "availability_schedule": {}, "created_at": "2025-10-12T10:27:51.550924"}

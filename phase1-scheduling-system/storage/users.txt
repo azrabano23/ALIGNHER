@@ -1,0 +1,1 @@
+{"id": "user-bd594622-3aad-4fb7-b08a-823e21c50d71", "email": "test@example.com", "password_hash": "$2b$12$xFa/JXIp7fc0RvcYyEPB0.57vtbZ6fBLMtzU8GftAtI8fPbOILFKe", "role": "doctor", "created_at": "2025-10-12T10:27:51.550234"}

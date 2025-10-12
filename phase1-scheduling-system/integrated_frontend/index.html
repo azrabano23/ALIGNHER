@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrated Healthcare System - Smart Triage & No-Show Prevention</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #333;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-tab:hover, .nav-tab.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            gap: 2rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .priority-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .priority-red {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #dc2626;
+            border: 2px solid #dc2626;
+        }
+        
+        .priority-orange {
+            background: linear-gradient(135deg, #fed7aa, #fdba74);
+            color: #ea580c;
+            border: 2px solid #ea580c;
+        }
+        
+        .priority-yellow {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #d97706;
+            border: 2px solid #d97706;
+        }
+        
+        .priority-green {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #16a34a;
+            border: 2px solid #16a34a;
+        }
+        
+        .results {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .error {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-left-color: #dc2626;
+            color: #dc2626;
+        }
+        
+        .success {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left-color: #16a34a;
+            color: #16a34a;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .appointment-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            transition: all 0.3s ease;
+        }
+        
+        .appointment-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .system-status {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .status-healthy {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #16a34a;
+        }
+        
+        .status-offline {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #dc2626;
+        }
+        
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .symptom-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .symptom-checkbox:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .symptom-checkbox.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        .integration-status {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 2px solid #16a34a;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 Integrated Healthcare System</h1>
+        <p style="margin-top: 0.5rem; color: #666;">Smart Triage • Intelligent Scheduling • No-Show Prevention</p>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('triage')">🩺 Smart Triage</button>
+            <button class="nav-tab" onclick="switchTab('scheduling')">📅 Appointment Scheduling</button>
+            <button class="nav-tab" onclick="switchTab('noshow')">🎯 No-Show Prevention</button>
+            <button class="nav-tab" onclick="switchTab('analytics')">📊 Analytics Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('registration')">👥 Registration</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- System Status -->
+        <div class="integration-status">
+            <h3>🔗 System Integration Status</h3>
+            <div class="system-status" id="systemStatus">
+                <div class="status-indicator">
+                    <div class="spinner" style="width: 20px; height: 20px;"></div>
+                    Checking system status...
+                </div>
+            </div>
+        </div>
+        
+        <!-- Smart Triage Tab -->
+        <div id="triage-tab" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>🩺 AI-Powered Triage Assessment</h2>
+                    <form id="triageForm">
+                        <div class="form-group">
+                            <label for="patientId">Patient ID</label>
+                            <input type="text" id="patientId" placeholder="Enter patient ID" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="chiefComplaint">Chief Complaint</label>
+                            <textarea id="chiefComplaint" placeholder="Describe the patient's main concern..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Common Symptoms (select all that apply)</label>
+                            <div class="symptom-grid" id="symptomGrid">
+                                <!-- Symptoms will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="painLevel">Pain Level (0-10)</label>
+                            <select id="painLevel">
+                                <option value="">Select pain level</option>
+                                <option value="0">0 - No pain</option>
+                                <option value="1">1 - Minimal</option>
+                                <option value="2">2 - Mild</option>
+                                <option value="3">3 - Uncomfortable</option>
+                                <option value="4">4 - Moderate</option>
+                                <option value="5">5 - Distracting</option>
+                                <option value="6">6 - Distressing</option>
+                                <option value="7">7 - Unmanageable</option>
+                                <option value="8">8 - Intense</option>
+                                <option value="9">9 - Severe</option>
+                                <option value="10">10 - Unable to move</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="duration">Duration of Symptoms</label>
+                            <input type="text" id="duration" placeholder="e.g., 3 days, 2 weeks, sudden onset">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="medicalHistory">Medical History</label>
+                            <input type="text" id="medicalHistory" placeholder="Previous conditions, surgeries, etc.">
+                        </div>
+                        
+                        <button type="submit" class="btn">🔍 Perform AI Triage Assessment</button>
+                    </form>
+                    
+                    <div id="triageResults" class="results hidden"></div>
+                </div>
+                
+                <div class="card">
+                    <h2>📋 Recent Triage Assessments</h2>
+                    <div id="recentTriages">
+                        <p style="color: #666; text-align: center; padding: 2rem;">No recent assessments</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Appointment Scheduling Tab -->
+        <div id="scheduling-tab" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>📅 Schedule Appointment</h2>
+                    <form id="schedulingForm">
+                        <div class="form-group">
+                            <label for="schedulePatientId">Patient ID</label>
+                            <input type="text" id="schedulePatientId" placeholder="Enter patient ID" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="triageId">Triage Assessment ID</label>
+                            <input type="text" id="triageId" placeholder="From triage assessment" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="preferredDate">Preferred Date & Time</label>
+                            <input type="datetime-local" id="preferredDate">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="insuranceProvider">Insurance Provider</label>
+                            <select id="insuranceProvider" required>
+                                <option value="">Select insurance</option>
+                                <option value="Aetna">Aetna</option>
+                                <option value="BlueCross">BlueCross BlueShield</option>
+                                <option value="Cigna">Cigna</option>
+                                <option value="UnitedHealth">UnitedHealth</option>
+                                <option value="Medicare">Medicare</option>
+                                <option value="Medicaid">Medicaid</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="telehealthPreferred"> Telehealth preferred
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn">📅 Schedule Appointment</button>
+                    </form>
+                    
+                    <div id="schedulingResults" class="results hidden"></div>
+                </div>
+                
+                <div class="card">
+                    <h2>👥 Find Matching Providers</h2>
+                    <button class="btn btn-secondary" onclick="findProviders()">🔍 Find Available Providers</button>
+                    <div id="providerResults" class="results hidden"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- No-Show Prevention Tab -->
+        <div id="noshow-tab" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>🎯 No-Show Risk Assessment</h2>
+                    <div class="form-group">
+                        <label for="appointmentId">Appointment ID</label>
+                        <input type="text" id="appointmentId" placeholder="Enter appointment ID">
+                    </div>
+                    <button class="btn" onclick="checkNoShowRisk()">📊 Check Risk Assessment</button>
+                    <div id="riskResults" class="results hidden"></div>
+                </div>
+                
+                <div class="card">
+                    <h2>📱 Intervention Management</h2>
+                    <div class="form-group">
+                        <label for="interventionAppointmentId">Appointment ID</label>
+                        <input type="text" id="interventionAppointmentId" placeholder="Enter appointment ID">
+                    </div>
+                    <button class="btn btn-success" onclick="triggerInterventions()">🚀 Trigger Interventions</button>
+                    <div id="interventionResults" class="results hidden"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics Dashboard Tab -->
+        <div id="analytics-tab" class="tab-content">
+            <div class="card">
+                <h2>📊 System Analytics</h2>
+                <button class="btn" onclick="loadAnalytics()">🔄 Refresh Analytics</button>
+                <div id="analyticsResults" class="results hidden"></div>
+            </div>
+        </div>
+        
+        <!-- Registration Tab -->
+        <div id="registration-tab" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>👨‍⚕️ Doctor Registration</h2>
+                    <form id="doctorRegistrationForm">
+                        <div class="form-group">
+                            <label for="doctorEmail">Email</label>
+                            <input type="email" id="doctorEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="doctorPassword">Password</label>
+                            <input type="password" id="doctorPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="doctorName">Full Name</label>
+                            <input type="text" id="doctorName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="doctorSpecialty">Specialty</label>
+                            <select id="doctorSpecialty" required>
+                                <option value="">Select specialty</option>
+                                <option value="Obstetrics and Gynecology">Obstetrics and Gynecology</option>
+                                <option value="Internal Medicine">Internal Medicine</option>
+                                <option value="Family Medicine">Family Medicine</option>
+                                <option value="Emergency Medicine">Emergency Medicine</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">👨‍⚕️ Register Doctor</button>
+                    </form>
+                    <div id="doctorRegistrationResults" class="results hidden"></div>
+                </div>
+                
+                <div class="card">
+                    <h2>👥 Patient Registration</h2>
+                    <form id="patientRegistrationForm">
+                        <div class="form-group">
+                            <label for="patientEmail">Email</label>
+                            <input type="email" id="patientEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientPassword">Password</label>
+                            <input type="password" id="patientPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientFirstName">First Name</label>
+                            <input type="text" id="patientFirstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientLastName">Last Name</label>
+                            <input type="text" id="patientLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientPhone">Phone</label>
+                            <input type="tel" id="patientPhone" required>
+                        </div>
+                        <button type="submit" class="btn">👥 Register Patient</button>
+                    </form>
+                    <div id="patientRegistrationResults" class="results hidden"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/integrated-app.js"></script>
+</body>
+</html>
