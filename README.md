@@ -3,14 +3,13 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
 [![AI Powered](https://img.shields.io/badge/AI-Powered-purple.svg)]()
-[![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)]()
 
-## 🎯 **Revolutionary Healthcare Solution**
+## 🎯 **Overview**
 
-**AlignHer** is a complete, AI-powered healthcare system that transforms patient care through intelligent triage, automated scheduling, and proactive no-show prevention. Built for modern healthcare organizations seeking to optimize patient outcomes and operational efficiency.
+**AlignHer** is a prototype healthcare-workflow application exploring AI-assisted patient triage, appointment scheduling, and no-show risk prediction. It was built as a student project to study how these pieces fit together -- it is not a deployed or clinically validated system.
 
 ### 🌟 **Key Innovations**
-- **🧠 AI-Powered Triage** - Clinical protocol-based symptom assessment with 99%+ accuracy
+- **🧠 AI-Powered Triage** - Clinical protocol-based symptom assessment
 - **📅 Intelligent Scheduling** - Multi-criteria provider matching with real-time availability
 - **🎯 No-Show Prevention** - ML-driven risk prediction with tiered intervention campaigns
 - **🔗 Seamless Integration** - Real-time handoff between triage and prevention systems
@@ -289,7 +288,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **First system** to combine clinical triage priority with behavioral no-show prediction
 - **AI-powered end-to-end** patient journey optimization
 - **Real-time integration** between scheduling and prevention systems
-- **Production-ready** with enterprise-grade architecture
+- A prototype (FastAPI backend) -- not deployed or clinically validated
 - **Proven ROI** with measurable business impact
 
 ### **Market Impact**
