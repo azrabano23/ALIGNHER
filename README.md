@@ -1,4 +1,4 @@
-# 🏥 AlignHer - Complete Healthcare System
+# 🏥 AlignHer — Healthcare System
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
